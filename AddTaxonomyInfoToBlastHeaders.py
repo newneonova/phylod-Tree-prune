@@ -1,31 +1,26 @@
-HEADERS = 'TaxaResultsRaw.txt'
-
+Fastas = 'Only_Unique_processed_30Percent_sequence_blastp.fa'
+TaxaInfo = 'TaxaResultsProcessed2.txt'
 
 Outlist = list()
+count=0
 
-BuiltLine=''
-done=False
-with open(HEADERS) as F:
+OrderedTaxas=list()
+with open(TaxaInfo) as F:
     for line in F:
-        if not done and not '*-*-' in line:
-            if 'COMMENT' in line:
-                done=True
-            else:
-                BuiltLine=BuiltLine+line.rstrip()
+        OrderedTaxas.append(line)
+
+hadLine=''
+with open(Fastas) as F:
+    for line in F:
+        if line.startswith('>'):
+            count=count+1
+            hadLine=line[:1]+str(count).zfill(5)+"_"+line[1:].rstrip()+" "+OrderedTaxas[count-1]
+        else:
+            hadLine=hadLine+line
+            Outlist.append(hadLine)
+            hadLine=''
 
 
 
-        if '*-*-' in line:
-            
-            done=False
-            Outlist.append(BuiltLine)
-            BuiltLine=''
-            NumInBlock = 0
-
-            
-            
-        
-
-
-open('TaxaResultsProcessed.txt','w').write('\n'.join(Outlist))
+open('processed_30Percent_sequence_blastp_With_Taxa.fa','w').write(''.join(Outlist))
 
